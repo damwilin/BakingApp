@@ -18,4 +18,28 @@ public class Recipe {
     private int servings;
     @SerializedName("image")
     private String imageURL;
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<Ingredient> getIngredients() {
+        return ingredients;
+    }
+
+    public List<Step> getSteps() {
+        return steps;
+    }
+
+    public int getServings() {
+        return servings;
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
 }
