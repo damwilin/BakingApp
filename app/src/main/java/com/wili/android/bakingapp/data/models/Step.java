@@ -1,8 +1,11 @@
 package com.wili.android.bakingapp.data.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
-public class Step {
+public class Step implements Parcelable {
     @SerializedName("id")
     private int id;
     @SerializedName("shortDescription")
@@ -12,7 +15,11 @@ public class Step {
     @SerializedName("thumbnailURL")
     private String thumbnailURL;
 
-    public Step() {
+    protected Step(Parcel in) {
+        id = in.readInt();
+        shortDescription = in.readString();
+        videoURL = in.readString();
+        thumbnailURL = in.readString();
     }
 
     public int getId() {
@@ -30,4 +37,29 @@ public class Step {
     public String getThumbnailURL() {
         return thumbnailURL;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(shortDescription);
+        dest.writeString(videoURL);
+        dest.writeString(thumbnailURL);
+    }
+
+    public static final Creator<Step> CREATOR = new Creator<Step>() {
+        @Override
+        public Step createFromParcel(Parcel source) {
+            return new Step(source);
+        }
+
+        @Override
+        public Step[] newArray(int size) {
+            return new Step[size];
+        }
+    };
 }

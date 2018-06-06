@@ -20,6 +20,8 @@ import com.wili.android.bakingapp.data.models.Recipe;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.wili.android.bakingapp.data.models.Recipe.RECIPE_KEY;
+
 public class RecipeListFragment extends Fragment implements RecipeAdapter.RecipeOnClickListener{
     private List<Recipe> recipeList;
     private View rootView;
@@ -51,7 +53,9 @@ public class RecipeListFragment extends Fragment implements RecipeAdapter.Recipe
     @Override
     public void onClick(Recipe recipe) {
         Intent intent = new Intent(getActivity(), DetailActivity.class);
-        //intent.putExtra(recipe);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(RECIPE_KEY, recipe);
+        intent.putExtras(bundle);
         startActivity(intent);
     }
 }
