@@ -20,11 +20,17 @@ import butterknife.ButterKnife;
 
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder> {
     private List<Recipe> recipeList;
+    private RecipeOnClickListener onClickListener;
 
-    public RecipeAdapter(List<Recipe> recipeList) {
+    public RecipeAdapter(List<Recipe> recipeList, RecipeOnClickListener onClickListener) {
         this.recipeList = recipeList;
+        this.onClickListener = onClickListener;
     }
 
+
+    public interface RecipeOnClickListener{
+        void onClick(Recipe recipe);
+    }
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -35,8 +41,10 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String name = recipeList.get(position).getName();
-        String imagePath = recipeList.get(position).getImageURL();
+        final Recipe currRecipe = recipeList.get(position);
+        String name = currRecipe.getName();
+        String imagePath = currRecipe.getImageURL();
+
 
         holder.recipeName.setText(name);
             Picasso.get()
@@ -45,6 +53,12 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
                     .placeholder(R.drawable.cake_placeholder)
                     .error(R.drawable.cake_placeholder)
                     .into(holder.recipeImage);
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onClickListener.onClick(currRecipe);
+                }
+            });
     }
 
     @Override

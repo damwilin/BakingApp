@@ -20,7 +20,7 @@ import com.wili.android.bakingapp.data.models.Recipe;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecipeListFragment extends Fragment{
+public class RecipeListFragment extends Fragment implements RecipeAdapter.RecipeOnClickListener{
     private List<Recipe> recipeList;
     private View rootView;
     private RecyclerView recyclerView;
@@ -34,7 +34,7 @@ public class RecipeListFragment extends Fragment{
 
         if (recipeList!= null){
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-            RecipeAdapter recipeAdapter = new RecipeAdapter(recipeList);
+            RecipeAdapter recipeAdapter = new RecipeAdapter(recipeList, this);
             recyclerView.setAdapter(recipeAdapter);
         }
         return rootView;
@@ -48,4 +48,10 @@ public class RecipeListFragment extends Fragment{
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycleListView);
     }
 
+    @Override
+    public void onClick(Recipe recipe) {
+        Intent intent = new Intent(getActivity(), DetailActivity.class);
+        //intent.putExtra(recipe);
+        startActivity(intent);
+    }
 }
