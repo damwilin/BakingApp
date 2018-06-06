@@ -10,6 +10,10 @@ public class RetrofitService {
 
     private RetrofitService(){}
 
+    public static <T> T getService(Class<T> tClass) {
+        return getService().create(tClass);
+    }
+
     public static Retrofit getService(){
         if (retrofit == null){
             OkHttpClient.Builder builder = new OkHttpClient.Builder();

@@ -42,4 +42,11 @@ public class Recipe {
     public String getImageURL() {
         return imageURL;
     }
+
+    public Recipe() {
+    }
+
+    public Recipe(String name) {
+        this.name = name;
+    }
 }

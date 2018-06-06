@@ -38,12 +38,13 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
         String name = recipeList.get(position).getName();
         String imagePath = recipeList.get(position).getImageURL();
 
-        //TODO: Add error and placeholder to picasso
         holder.recipeName.setText(name);
-        Picasso.get()
-                .load(imagePath)
-                .centerCrop()
-                .into(holder.recipeImage);
+            Picasso.get()
+                    .load(imagePath)
+                    .centerCrop()
+                    .placeholder(R.drawable.cake_placeholder)
+                    .error(R.drawable.cake_placeholder)
+                    .into(holder.recipeImage);
     }
 
     @Override
@@ -51,7 +52,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
         return recipeList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.recipe_name)
         TextView recipeName;
         @BindView(R.id.recipe_image)
@@ -61,5 +62,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
+
     }
 }
