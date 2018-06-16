@@ -44,15 +44,22 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
         final Recipe currRecipe = recipeList.get(position);
         String name = currRecipe.getName();
         String imagePath = currRecipe.getImageURL();
-
-
         holder.recipeName.setText(name);
+
+
+        if (imagePath.isEmpty() || imagePath.equals("")){
+            Picasso.get()
+                    .load(R.drawable.cake_placeholder)
+                    .into(holder.recipeImage);
+
+        } else {
             Picasso.get()
                     .load(imagePath)
                     .centerCrop()
                     .placeholder(R.drawable.cake_placeholder)
                     .error(R.drawable.cake_placeholder)
                     .into(holder.recipeImage);
+        }
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.gson.Gson;
 import com.wili.android.bakingapp.R;
 import com.wili.android.bakingapp.activity.detail.DetailActivity;
 import com.wili.android.bakingapp.activity.main.MainActivity;
@@ -52,10 +53,9 @@ public class RecipeListFragment extends Fragment implements RecipeAdapter.Recipe
 
     @Override
     public void onClick(Recipe recipe) {
+        Gson gson = new Gson();
         Intent intent = new Intent(getActivity(), DetailActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(RECIPE_KEY, recipe);
-        intent.putExtras(bundle);
+        intent.putExtra(Recipe.RECIPE_KEY, gson.toJson(recipe));
         startActivity(intent);
     }
 }
