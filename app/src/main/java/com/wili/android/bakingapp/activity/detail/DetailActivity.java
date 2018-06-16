@@ -7,13 +7,13 @@ import android.os.Bundle;
 import com.google.gson.Gson;
 import com.wili.android.bakingapp.R;
 import com.wili.android.bakingapp.data.models.Recipe;
-import com.wili.android.bakingapp.fragment.RecipeStepDetailFragment;
+import com.wili.android.bakingapp.fragment.RecipeDetailFragment;
 
 public class DetailActivity extends AppCompatActivity implements DetailActivityView {
     private DetailActivityPresenter presenter;
     private Recipe recipe;
 
-    private RecipeStepDetailFragment recipeStepDetailFragment;
+    private RecipeDetailFragment recipeDetailFragment;
     private FragmentManager fragmentManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,26 +22,25 @@ public class DetailActivity extends AppCompatActivity implements DetailActivityV
         presenter = new DetailActivityPresenter(this);
         getRecipeFromIntent();
         initializeFragment();
-        displayRecipeStepDetail(recipe);
+        displayRecipeDetail(recipe);
     }
 
     private void getRecipeFromIntent(){
         Gson gson = new Gson();
         String strObj = getIntent().getStringExtra(Recipe.RECIPE_KEY);
         recipe = gson.fromJson(strObj, Recipe.class);
-        System.out.println(recipe.getName().toString());
     }
     private void initializeFragment(){
-        recipeStepDetailFragment = new RecipeStepDetailFragment();
+        recipeDetailFragment = new RecipeDetailFragment();
         fragmentManager = getSupportFragmentManager();
     }
 
     @Override
-    public void displayRecipeStepDetail(Recipe recipe) {
-        recipeStepDetailFragment.setIngredientList(recipe.getIngredients());
-        recipeStepDetailFragment.setStepList(recipe.getSteps());
+    public void displayRecipeDetail(Recipe recipe) {
+        recipeDetailFragment.setIngredientList(recipe.getIngredients());
+        recipeDetailFragment.setStepList(recipe.getSteps());
         fragmentManager.beginTransaction()
-                .add(R.id.ingredients_container, recipeStepDetailFragment)
+                .add(R.id.ingredients_container, recipeDetailFragment)
                 .commit();
     }
 }

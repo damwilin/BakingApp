@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.wili.android.bakingapp.R;
+import com.wili.android.bakingapp.data.models.Recipe;
 import com.wili.android.bakingapp.data.models.Step;
 
 import java.util.List;
@@ -16,10 +17,16 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class RecipeStepAdapter extends RecyclerView.Adapter<RecipeStepAdapter.ViewHolder> {
-    List<Step> stepList;
+    private List<Step> stepList;
+    private StepOnClickListener stepOnClickListener;
 
-    public RecipeStepAdapter(List<Step> stepList) {
+    public RecipeStepAdapter(List<Step> stepList, StepOnClickListener stepOnClickListener) {
         this.stepList = stepList;
+        this.stepOnClickListener = stepOnClickListener;
+    }
+
+    public interface StepOnClickListener{
+        void onClick(Step step);
     }
 
     @NonNull
@@ -32,8 +39,15 @@ public class RecipeStepAdapter extends RecyclerView.Adapter<RecipeStepAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String stepShortDescription = stepList.get(position).getShortDescription();
+        final Step currStep = stepList.get(position);
+        String stepShortDescription = currStep.getShortDescription();
         holder.shortDescription.setText(stepShortDescription);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stepOnClickListener.onClick(currStep);
+            }
+        });
 
     }
 
