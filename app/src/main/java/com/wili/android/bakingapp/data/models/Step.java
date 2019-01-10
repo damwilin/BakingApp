@@ -14,6 +14,8 @@ public class Step implements Parcelable {
     private String videoURL;
     @SerializedName("thumbnailURL")
     private String thumbnailURL;
+    @SerializedName("description")
+    private String description;
 
     public static final String STEP_KEY = "step";
 
@@ -22,6 +24,7 @@ public class Step implements Parcelable {
         shortDescription = in.readString();
         videoURL = in.readString();
         thumbnailURL = in.readString();
+        description = in.readString();
     }
 
     public int getId() {
@@ -40,6 +43,10 @@ public class Step implements Parcelable {
         return thumbnailURL;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -51,6 +58,7 @@ public class Step implements Parcelable {
         dest.writeString(shortDescription);
         dest.writeString(videoURL);
         dest.writeString(thumbnailURL);
+        dest.writeString(description);
     }
 
     public static final Creator<Step> CREATOR = new Creator<Step>() {

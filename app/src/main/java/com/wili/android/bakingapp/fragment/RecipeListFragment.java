@@ -2,11 +2,6 @@ package com.wili.android.bakingapp.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,19 +9,25 @@ import android.view.ViewGroup;
 import com.google.gson.Gson;
 import com.wili.android.bakingapp.R;
 import com.wili.android.bakingapp.activity.detail.DetailActivity;
-import com.wili.android.bakingapp.activity.main.MainActivity;
+import com.wili.android.bakingapp.activity.main.MainViewModel;
 import com.wili.android.bakingapp.adapter.RecipeAdapter;
 import com.wili.android.bakingapp.data.models.Recipe;
+import com.wili.android.bakingapp.utils.Utils;
+import com.wili.android.bakingapp.widget.WidgetService;
 
-import java.util.ArrayList;
-import java.util.List;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import static com.wili.android.bakingapp.data.models.Recipe.RECIPE_KEY;
-
-public class RecipeListFragment extends Fragment implements RecipeAdapter.RecipeOnClickListener{
-    private List<Recipe> recipeList;
+public class RecipeListFragment extends Fragment implements RecipeAdapter.RecipeOnClickListener {
     private View rootView;
     private RecyclerView recyclerView;
+    private RecipeAdapter recipeAdapter;
+    private MainViewModel viewModel;
 
 
     @Nullable
@@ -34,21 +35,27 @@ public class RecipeListFragment extends Fragment implements RecipeAdapter.Recipe
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_list, container, false);
         getViews();
+        recipeAdapter = new RecipeAdapter(this);
 
-        if (recipeList!= null){
-            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-            RecipeAdapter recipeAdapter = new RecipeAdapter(recipeList, this);
-            recyclerView.setAdapter(recipeAdapter);
-        }
+        viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
+        viewModel.getRecipeList().observe(this, recipes -> {
+            recipeAdapter.setData(recipes);
+        });
+
+        setLayoutManager();
+        recyclerView.setAdapter(recipeAdapter);
         return rootView;
     }
 
-    public void setRecipeList(List<Recipe> recipeList){
-        this.recipeList = recipeList;
+    private void getViews() {
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.recycleListView);
     }
 
-    private void getViews(){
-        recyclerView = (RecyclerView) rootView.findViewById(R.id.recycleListView);
+    private void setLayoutManager() {
+        if (Utils.isTablet(getActivity()))
+            recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        else
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
     @Override
@@ -56,6 +63,7 @@ public class RecipeListFragment extends Fragment implements RecipeAdapter.Recipe
         Gson gson = new Gson();
         Intent intent = new Intent(getActivity(), DetailActivity.class);
         intent.putExtra(Recipe.RECIPE_KEY, gson.toJson(recipe));
+        WidgetService.updateRecipeWidgets(getActivity().getBaseContext(), recipe);
         startActivity(intent);
     }
 }

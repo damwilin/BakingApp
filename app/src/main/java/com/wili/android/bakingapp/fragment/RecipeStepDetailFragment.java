@@ -1,13 +1,8 @@
 package com.wili.android.bakingapp.fragment;
 
-import android.content.res.Configuration;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -28,13 +22,20 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.wili.android.bakingapp.R;
-import com.wili.android.bakingapp.data.models.Step;
+import com.wili.android.bakingapp.activity.MViewModel;
+import com.wili.android.bakingapp.activity.detail.DetailViewModel;
+import com.wili.android.bakingapp.activity.step.RecipeStepViewModel;
+import com.wili.android.bakingapp.utils.Utils;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
 public class RecipeStepDetailFragment extends Fragment {
     private final static String TAG = RecipeStepDetailFragment.class.getSimpleName();
     private View rootView;
     private int currentWindow;
-    private Step step;
     private SimpleExoPlayer exoPlayer;
     private SimpleExoPlayerView exoPlayerView;
     private MediaSessionCompat mediaSession;
@@ -43,11 +44,17 @@ public class RecipeStepDetailFragment extends Fragment {
     private static final String VIDEO_POSITION = "videoPosition";
     private static final String VIDEO_WINDOW = "videoWindow";
 
+    private MViewModel viewModel;
+
+    public static RecipeStepDetailFragment getNewInstance() {
+        RecipeStepDetailFragment fragment = new RecipeStepDetailFragment();
+        return fragment;
+    }
+
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        if (savedInstanceState != null){
-            step = savedInstanceState.getParcelable(Step.STEP_KEY);
+        if (savedInstanceState != null) {
             videoPosition = savedInstanceState.getLong(VIDEO_POSITION);
             currentWindow = savedInstanceState.getInt(VIDEO_WINDOW);
             Log.d(RecipeStepDetailFragment.class.getSimpleName(), "Video Position after: " + videoPosition);
@@ -60,50 +67,54 @@ public class RecipeStepDetailFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_recipe_step_detail, container, false);
         exoPlayerView = rootView.findViewById(R.id.exoplayer_step_detail);
         stepInstruction = rootView.findViewById(R.id.step_instruction);
+        if (Utils.isTablet(getActivity())) {
+            viewModel = ViewModelProviders.of(getActivity()).get(DetailViewModel.class);
+        } else {
+            viewModel = ViewModelProviders.of(getActivity()).get(RecipeStepViewModel.class);
+        }
         setLandscapeMode();
-        if(step != null){
+        if (viewModel.getStep() != null) {
             initializeMediaSession();
-            initializePlayer(step.getVideoURL());
+            initializePlayer(viewModel.getStep().getVideoURL());
             setInstruction();
         }
         return rootView;
     }
 
-    public void setStep(Step step) {
-        this.step = step;
-    }
-
-    private void initializeMediaSession(){
-        mediaSession = new MediaSessionCompat(getContext(),TAG);
+    private void initializeMediaSession() {
+        mediaSession = new MediaSessionCompat(getContext(), TAG);
         mediaSession.setActive(true);
     }
 
-    private void initializePlayer(String mediaUrl){
-        Uri uri = Uri.parse(mediaUrl);
-        if (exoPlayer== null){
-            TrackSelector trackSelector = new DefaultTrackSelector();
-            LoadControl loadControl = new DefaultLoadControl();
-            exoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, loadControl);
-            exoPlayerView.setPlayer(exoPlayer);
-            String userAgent = Util.getUserAgent(getContext(), "RecipeVideo");
-            MediaSource mediaSource = new ExtractorMediaSource(uri, new DefaultDataSourceFactory(getContext(), userAgent), new DefaultExtractorsFactory(), null,null);
-            exoPlayer.prepare(mediaSource);
-            if (videoPosition!= null)
-                exoPlayer.seekTo(currentWindow, videoPosition);
+    public void initializePlayer(String mediaUrl) {
+        if (mediaUrl != null && !mediaUrl.isEmpty() && !mediaUrl.equals("")) {
+            Uri uri = Uri.parse(mediaUrl);
+            if (exoPlayer == null) {
+                TrackSelector trackSelector = new DefaultTrackSelector();
+                LoadControl loadControl = new DefaultLoadControl();
+                exoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, loadControl);
+                exoPlayerView.setPlayer(exoPlayer);
+                String userAgent = Util.getUserAgent(getContext(), "RecipeVideo");
+                MediaSource mediaSource = new ExtractorMediaSource(uri, new DefaultDataSourceFactory(getContext(), userAgent), new DefaultExtractorsFactory(), null, null);
+                exoPlayer.prepare(mediaSource);
+                if (videoPosition != null)
+                    exoPlayer.seekTo(currentWindow, videoPosition);
+            }
         }
     }
 
-    private void releasePlayer(){
-        if (exoPlayer != null){
+    private void releasePlayer() {
+        if (exoPlayer != null) {
             exoPlayer.release();
             currentWindow = exoPlayer.getCurrentWindowIndex();
             videoPosition = exoPlayer.getCurrentPosition();
             exoPlayer = null;
         }
     }
-    private void setInstruction(){
-        stepInstruction.setText(step.getShortDescription());
-        Log.d(TAG, "Step description: " + step.getShortDescription());
+
+    private void setInstruction() {
+        stepInstruction.setText(viewModel.getStep().getDescription());
+        Log.d(TAG, "Step description: " + viewModel.getStep().getShortDescription());
     }
 
 
@@ -118,19 +129,17 @@ public class RecipeStepDetailFragment extends Fragment {
         super.onPause();
     }
 
-    private void setLandscapeMode(){
-        if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+    private void setLandscapeMode() {
+        if (Utils.isLandscape(getActivity())) {
             exoPlayerView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
             exoPlayerView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
-            ((AppCompatActivity)getActivity()).getSupportActionBar().hide();
         }
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(Step.STEP_KEY, step);
-        if (exoPlayer != null){
+        if (exoPlayer != null) {
             videoPosition = exoPlayer.getCurrentPosition();
             outState.putLong(VIDEO_POSITION, videoPosition);
             currentWindow = exoPlayer.getCurrentWindowIndex();

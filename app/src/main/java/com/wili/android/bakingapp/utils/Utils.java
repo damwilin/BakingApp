@@ -1,6 +1,7 @@
 package com.wili.android.bakingapp.utils;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.util.DisplayMetrics;
 
 public class Utils {
@@ -14,5 +15,10 @@ public class Utils {
             return true;
         }
         return false;
+    }
+
+    public static boolean isLandscape(Activity activity) {
+        return activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+
     }
 }
