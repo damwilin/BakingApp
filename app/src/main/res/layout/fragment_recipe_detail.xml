@@ -38,5 +38,10 @@
             android:background="#ECEFF1">
 
         </androidx.recyclerview.widget.RecyclerView>
+
+        <moe.feng.common.stepperview.VerticalStepperView
+            android:id="@+id/vertical_stepper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"></moe.feng.common.stepperview.VerticalStepperView>
     </LinearLayout>
 </ScrollView>

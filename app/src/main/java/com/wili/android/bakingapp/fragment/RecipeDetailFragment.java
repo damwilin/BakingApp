@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import moe.feng.common.stepperview.VerticalStepperView;
 
 public class RecipeDetailFragment extends Fragment implements RecipeStepAdapter.StepOnClickListener {
     private DetailViewModel viewModel;
@@ -29,6 +30,7 @@ public class RecipeDetailFragment extends Fragment implements RecipeStepAdapter.
     private RecyclerView ingredientsRecyclerView;
     private RecyclerView stepRecyclerView;
     private MClickListener listener;
+    private VerticalStepperView verticalStepperView;
 
     @Nullable
     @Override
@@ -55,6 +57,7 @@ public class RecipeDetailFragment extends Fragment implements RecipeStepAdapter.
     private void getViews() {
         ingredientsRecyclerView = rootView.findViewById(R.id.recyclerViewRecipeIngredients);
         stepRecyclerView = rootView.findViewById(R.id.recyclerViewRecipeStep);
+        verticalStepperView = rootView.findViewById(R.id.vertical_stepper);
     }
 
     public void setMClickListener(MClickListener listener) {
@@ -75,5 +78,9 @@ public class RecipeDetailFragment extends Fragment implements RecipeStepAdapter.
 
     public interface MClickListener {
         void onClick(Step step);
+    }
+
+    private void configureVerticalStepper() {
+        verticalStepperView.setStepperAdapter(this);
     }
 }
